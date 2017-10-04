@@ -1,8 +1,8 @@
 console.log("This is a day");
 
-const filename = 'jesse_jackson.mp3';
-
+const filename = 'samples/jesse_jackson.mp3';
 const audioContext = new AudioContext();
+
 
 function startLoop(audioBuffer, start, stop, pan = 0, rate = 1) {
     const sourceNode = audioContext.createBufferSource();
