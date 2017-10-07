@@ -21,12 +21,7 @@ const SAMPLE_LIBRARY = {
 const OCTAVE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const audioContext = new AudioContext();
 
-fetchSample(`${PATH}airportTerminal.wav`).then(convolverBuffer => {
-    let convolver = audioContext.createConvolver();
-    convolver.buffer = convolverBuffer;
-    convolver.connect(audioContext.destination);
-
-    // run the piece...
+function playPiece (convolver) {
     startLoop('Grand Piano', 'F4',  convolver, 19.7, 4.0);
     startLoop('Grand Piano', 'Ab4', convolver, 17.8, 8.1);
     startLoop('Grand Piano', 'C5',  convolver, 21.3, 5.6);
@@ -34,7 +29,14 @@ fetchSample(`${PATH}airportTerminal.wav`).then(convolverBuffer => {
     startLoop('Grand Piano', 'Eb5', convolver, 18.4, 9.2);
     startLoop('Grand Piano', 'F5',  convolver, 20.0, 14.1);
     startLoop('Grand Piano', 'Ab5', convolver, 17.7, 3.1);
-});
+}
+
+fetchSample(`${PATH}airportTerminal.wav`).then(convolverBuffer => {
+    const convolver = audioContext.createConvolver();
+    convolver.buffer = convolverBuffer;
+    convolver.connect(audioContext.destination);
+    return convolver;
+}).then(playPiece);
 
 function playSample(instrument, note, convolverDestination, delaySeconds = 0) {
     console.log('Play %s %s', instrument, note);
@@ -95,12 +97,12 @@ function flatToSharp(note) {
     }
 }
 
-function startLoop(instrument, note, destination, loopLengthSeconds, delaySeconds) {
-    playSample(instrument, note, destination, delaySeconds);
-    setInterval(
-        () => playSample(instrument, note, destination, delaySeconds),
-        loopLengthSeconds * 1000
-    );
+function startLoop(instrument, note, convolverDestination, loopLengthSeconds, delaySeconds) {
+    const speed = .5;
+    loopLengthSeconds *= speed;
+    delaySeconds *= speed;
+    const run = () => playSample(instrument, note, convolverDestination, delaySeconds);
+    run();
+    setInterval(run, loopLengthSeconds * 1000);
 }
 
-//startLoop('Grand Piano', 'C4', 20, 5);

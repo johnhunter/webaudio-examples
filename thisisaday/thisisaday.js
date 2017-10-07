@@ -25,9 +25,11 @@ fetch(filename)
     .then(response => response.arrayBuffer())
     .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
     .then(audioBuffer => {
+        let phasePercentage = 5;
         let start = 7.20;
-        let stop = 8.40;//9.80;
+        let stop = 8.40;
+        stop = 9.71;
         startLoop(audioBuffer, start, stop, -1);
-        startLoop(audioBuffer, start, stop, 1, 1.02);
+        startLoop(audioBuffer, start, stop, 1, 1 + (phasePercentage/100));
     })
     .catch(e => console.error(e));
