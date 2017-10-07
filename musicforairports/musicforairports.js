@@ -1,25 +1,8 @@
+import {playSample, reverbConvolver} from './samplerUtils.js';
 
-console.log('Music for airports');
 
-const PATH = 'samples/';
-const SAMPLE_LIBRARY = {
-    'Grand Piano': [
-        { note: 'A', octave: 4, file: 'piano-f-a4.wav' },
-        { note: 'A', octave: 5, file: 'piano-f-a5.wav' },
-        { note: 'A', octave: 6, file: 'piano-f-a6.wav' },
-        { note: 'C', octave: 4, file: 'piano-f-c4.wav' },
-        { note: 'C', octave: 5, file: 'piano-f-c5.wav' },
-        { note: 'C', octave: 6, file: 'piano-f-c6.wav' },
-        { note: 'D#', octave: 4, file: 'piano-f-d#4.wav' },
-        { note: 'D#', octave: 5, file: 'piano-f-d#5.wav' },
-        { note: 'D#', octave: 6, file: 'piano-f-d#6.wav' },
-        { note: 'F#', octave: 4, file: 'piano-f-f#4.wav' },
-        { note: 'F#', octave: 5, file: 'piano-f-f#5.wav' },
-        { note: 'F#', octave: 6, file: 'piano-f-f#6.wav' }
-    ]
-};
-const OCTAVE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const audioContext = new AudioContext();
+reverbConvolver(audioContext).then(playPiece);
 
 function playPiece (convolver) {
     startLoop('Grand Piano', 'F4',  convolver, 19.7, 4.0);
@@ -31,78 +14,12 @@ function playPiece (convolver) {
     startLoop('Grand Piano', 'Ab5', convolver, 17.7, 3.1);
 }
 
-fetchSample(`${PATH}airportTerminal.wav`).then(convolverBuffer => {
-    const convolver = audioContext.createConvolver();
-    convolver.buffer = convolverBuffer;
-    convolver.connect(audioContext.destination);
-    return convolver;
-}).then(playPiece);
-
-function playSample(instrument, note, convolverDestination, delaySeconds = 0) {
-    console.log('Play %s %s', instrument, note);
-    getSample(instrument, note).then(({ audioBuffer, distance }) => {
-        let playbackRate = Math.pow(2, distance / 12);
-        let bufferSource = audioContext.createBufferSource();
-        bufferSource.buffer = audioBuffer;
-        bufferSource.playbackRate.value = playbackRate;
-        bufferSource.connect(convolverDestination);
-        bufferSource.connect(audioContext.destination);
-        bufferSource.start(audioContext.currentTime + delaySeconds);
-    });
-}
-
-function getSample(instrument, noteAndOctave) {
-    const sampleBank = SAMPLE_LIBRARY[instrument];
-
-    let [, note, octave] = /^(\w[b#]?)(\d)$/.exec(noteAndOctave);
-    octave = parseInt(octave, 10);
-    note = flatToSharp(note);
-
-    let sample = getNearestSample(sampleBank, note, octave);
-    let distance = getNoteDistance(note, octave, sample.note, sample.octave);
-    return fetchSample(PATH + sample.file).then(audioBuffer => ({ audioBuffer, distance }));
-}
-
-function fetchSample(path) {
-    return fetch(encodeURIComponent(path))
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer));
-}
-
-function noteValue(note, octave) {
-    return octave * 12 + OCTAVE.indexOf(note);
-}
-
-function getNoteDistance(note1, octave1, note2, octave2) {
-    return noteValue(note1, octave1) - noteValue(note2, octave2);
-}
-
-function getNearestSample(sampleBank, note, octave) {
-    let sortedBank = sampleBank.slice().sort((a, b) => {
-        let distanceToA = Math.abs(getNoteDistance(note, octave, a.note, a.octave));
-        let distanceToB = Math.abs(getNoteDistance(note, octave, b.note, b.octave));
-        return distanceToA - distanceToB;
-    });
-    return sortedBank[0];
-}
-
-function flatToSharp(note) {
-    switch (note) {
-        case 'Bb': return 'A#';
-        case 'Db': return 'C#';
-        case 'Eb': return 'D#';
-        case 'Gb': return 'F#';
-        case 'Ab': return 'G#';
-        default: return note;
-    }
-}
-
 function startLoop(instrument, note, convolverDestination, loopLengthSeconds, delaySeconds) {
     const speed = .5;
     loopLengthSeconds *= speed;
     delaySeconds *= speed;
-    const run = () => playSample(instrument, note, convolverDestination, delaySeconds);
-    run();
+    const run = () => playSample(audioContext, instrument, note, convolverDestination, delaySeconds);
     setInterval(run, loopLengthSeconds * 1000);
+    run();
 }
 
