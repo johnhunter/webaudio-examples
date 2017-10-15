@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<script async>
+    let A4 = 440;
+    let audioCtx = new AudioContext();
+
+    let osc = audioCtx.createOscillator();
+
+    //stepPitch(A4);
+    //portamento(A4);
+    portamento2();
+
+    function stepPitch(freq) {
+        osc.frequency.value = freq;
+        osc.frequency.setValueAtTime(freq * Math.pow(2, 1 / 12), audioCtx.currentTime + 1);
+        osc.frequency.setValueAtTime(freq * Math.pow(2, 2 / 12), audioCtx.currentTime + 2);
+    }
+
+    function portamento(freq) {
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(freq * Math.pow(2, 2 / 12), audioCtx.currentTime + 1);
+    }
+
+    function portamento2() {
+        let f1 = 440;
+        let f2 = 440 * Math.pow(2, 1 / 12);
+        let f3 = 440 * Math.pow(2, 2 / 12);
+
+        osc.frequency.setValueAtTime(f1, audioCtx.currentTime + 1);
+        osc.frequency.linearRampToValueAtTime(f2, audioCtx.currentTime + 2);
+        osc.frequency.setValueAtTime(f2, audioCtx.currentTime + 3);
+        osc.frequency.linearRampToValueAtTime(f3, audioCtx.currentTime + 4);
+    }
+
+
+    osc.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 5);
+
+</script>
+
+</html>
