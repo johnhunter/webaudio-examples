@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<script async>
+    const SAMPLE_RATE = 44100;
+    const REAL_TIME_FREQUENCY = 440; // A4 note
+    const DURATION = 2;
+    const ANGULAR_FREQUENCY = REAL_TIME_FREQUENCY * 2 * Math.PI;// in rads
+
+    const audioContext = new AudioContext();
+
+    //theHardWay();
+    theEasyWay();
+
+    function theHardWay() {
+        let sampleLength = SAMPLE_RATE * DURATION;
+        let myBuffer = audioContext.createBuffer(1, sampleLength, SAMPLE_RATE);
+        let src = audioContext.createBufferSource();
+
+        populateBuffer(myBuffer);
+        src.buffer = myBuffer;
+        src.connect(audioContext.destination);
+        src.start();
+    }
+
+    function theEasyWay() {
+        let myOscillator = audioContext.createOscillator();
+        myOscillator.frequency.value = REAL_TIME_FREQUENCY;
+        myOscillator.connect(audioContext.destination);
+        myOscillator.start();
+        myOscillator.stop(audioContext.currentTime + DURATION);
+    }
+
+    function populateBuffer(theBuffer) {
+        let myArray = theBuffer.getChannelData(0);// Float32Array
+        let length = theBuffer.length;
+        for (let sampleNumber = 0; sampleNumber < length; sampleNumber++) {
+            myArray[sampleNumber] = generateSample(sampleNumber);
+        }
+    }
+
+    function generateSample(sampleNumber) {
+        let sampleTime = sampleNumber / SAMPLE_RATE;
+        let sampleAngle = sampleTime * ANGULAR_FREQUENCY;
+        return Math.sin(sampleAngle);
+    }
+
+</script>
+</html>
