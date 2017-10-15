@@ -1,0 +1,18 @@
+
+.eq .slider-wrapper {
+    /* Float the wrappers so the sliders will render side by side */
+    float: left;
+}
+.eq .slider {
+    /* Put some horizontal space around each slider */
+    margin: auto 5px;
+    /* Set the slider heights */
+    height: 150px;
+}
+/* Make the frequency labels smaller and lighter */
+.eq label {
+    color: #777;
+    display: block;
+    font-size: 0.7em;
+    text-align: center;
+}
