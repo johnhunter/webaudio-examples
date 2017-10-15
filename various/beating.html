@@ -1,0 +1,56 @@
+<html>
+<script async>
+    const atten = .5;
+    let audioCtx = new AudioContext();
+
+    let osc1 = audioCtx.createOscillator();
+    let osc2 = audioCtx.createOscillator();
+    let gain1 = audioCtx.createGain();
+
+    let osc3 = audioCtx.createOscillator();
+    let osc4 = audioCtx.createOscillator();
+    let gain2 = audioCtx.createGain();
+
+    let osc5 = audioCtx.createOscillator();
+    let osc6 = audioCtx.createOscillator();
+    let gain3 = audioCtx.createGain();
+
+    let masterGain = audioCtx.createGain();
+
+    osc1.frequency.value = 330;
+    osc2.frequency.value = osc1.frequency.value + 0.2;
+    gain1.gain.value = atten;
+
+    osc3.frequency.value = 440;
+    osc4.frequency.value = osc3.frequency.value + 0.33;
+    gain2.gain.value = atten;
+
+    osc5.frequency.value = 587;
+    osc6.frequency.value = osc5.frequency.value + 0.25;
+    gain3.gain.value = atten;
+
+    masterGain.gain.value = atten;
+
+    osc1.connect(gain1);
+    osc2.connect(gain1);
+    gain1.connect(masterGain);
+
+    osc3.connect(gain2);
+    osc4.connect(gain2);
+    gain2.connect(masterGain);
+
+    osc5.connect(gain3);
+    osc6.connect(gain3);
+    gain3.connect(masterGain);
+
+    masterGain.connect(audioCtx.destination);
+
+    osc1.start();
+    osc2.start();
+    osc3.start();
+    osc4.start();
+    osc5.start();
+    osc6.start();
+</script>
+
+</html>

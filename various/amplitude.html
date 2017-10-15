@@ -1,0 +1,37 @@
+<html>
+<script async>
+    let audioCtx = new AudioContext();
+
+    // Create nodes
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+
+    // Set parameters
+    osc.frequency.value = 440;
+    gain.gain.value = 1;
+
+    // Schedule parameter changes
+    // Drop to -12 dBFS at ~1s
+    gain.gain.setValueAtTime(1, 1 - 0.03);
+    gain.gain.linearRampToValueAtTime(dBFSToGain(-12), 1);
+    // Drop to -24 dBFS at ~2s
+    gain.gain.setValueAtTime(dBFSToGain(-12), 2 - 0.03);
+    gain.gain.linearRampToValueAtTime(dBFSToGain(-24), 2);
+
+    // Connect graph
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    // Schedule start and stop
+    osc.start();
+    osc.stop(audioCtx.currentTime + 3);
+
+
+    function dBFSToGain(dbfs) {
+        return Math.pow(10, dbfs / 20);
+    }
+
+
+</script>
+
+</html>

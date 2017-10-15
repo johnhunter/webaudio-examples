@@ -1,0 +1,41 @@
+<html>
+<script async>
+
+let audioCtx = new AudioContext();
+
+let fundamental = audioCtx.createOscillator();
+let overtone1 = audioCtx.createOscillator();
+let overtone2 = audioCtx.createOscillator();
+let overtone3 = audioCtx.createOscillator();
+
+let overtone1Gain = audioCtx.createGain();
+let overtone2Gain = audioCtx.createGain();
+let overtone3Gain = audioCtx.createGain();
+let masterGain = audioCtx.createGain();
+
+fundamental.frequency.value = 440;
+overtone1.frequency.value = 880;
+overtone2.frequency.value = 1320;
+overtone3.frequency.value = 1760;
+
+overtone1Gain.gain.value = 0.1;
+overtone2Gain.gain.value = 0.2;
+overtone3Gain.gain.value = 0.5
+masterGain.gain.value = 0.3;
+
+fundamental.connect(masterGain);
+overtone1.connect(overtone1Gain);
+overtone2.connect(overtone2Gain);
+overtone3.connect(overtone3Gain);
+overtone1Gain.connect(masterGain);
+overtone2Gain.connect(masterGain);
+overtone3Gain.connect(masterGain);
+masterGain.connect(audioCtx.destination);
+
+fundamental.start(0);
+overtone1.start(0);
+overtone2.start(0);
+overtone3.start(0);
+
+</script>
+</html>

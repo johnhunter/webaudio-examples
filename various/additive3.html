@@ -1,0 +1,34 @@
+<html>
+<script type="module">
+    import { HarmonicSynth } from './HarmonicSynth.js';
+    let audioCtx = new AudioContext();
+
+
+    function sawtoothPartials() {
+        let partials = [];
+        for (let i = 1; i <= 45; i++) {
+            console.log(i)
+            partials.push(1 / i);
+        }
+        return partials;
+    }
+
+    function squarePartials() {
+        let partials = [];
+        for (let i = 1; i <= 45; i++) {
+            if (i % 2 !== 0) {
+                console.log(i);
+                partials.push(1 / i);
+            }
+        }
+        return partials;
+    }
+
+    let synth = new HarmonicSynth(audioCtx, sawtoothPartials());
+
+    synth.setFrequencyAtTime(440, audioCtx.currentTime);
+    synth.connect(audioCtx.destination);
+    synth.start(0);
+</script>
+
+</html>

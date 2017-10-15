@@ -1,0 +1,31 @@
+<html>
+<script type="module">
+    import {HarmonicSynth} from './HarmonicSynth.js';
+
+    let audioCtx = new AudioContext();
+
+    const G4 = 440 * Math.pow(2, -2 / 12);
+    const A4 = 440;
+    const F4 = 440 * Math.pow(2, -4 / 12);
+    const F3 = 440 * Math.pow(2, -16 / 12);
+    const C4 = 440 * Math.pow(2, -9 / 12);
+
+    let synth = new HarmonicSynth(audioCtx, [1, 0.1, 0.2, 0.5]);
+
+    let t = audioCtx.currentTime;
+    synth.setFrequencyAtTime(G4, t);
+    synth.setFrequencyAtTime(G4, t + 0.95);
+    synth.exponentialRampToFrequencyAtTime(A4, t + 1);
+    synth.setFrequencyAtTime(A4, t + 1.95);
+    synth.exponentialRampToFrequencyAtTime(F4, t + 2);
+    synth.setFrequencyAtTime(F4, t + 2.95);
+    synth.exponentialRampToFrequencyAtTime(F3, t + 3);
+    synth.setFrequencyAtTime(F3, t + 3.95);
+    synth.exponentialRampToFrequencyAtTime(C4, t + 4);
+
+    synth.connect(audioCtx.destination);
+    synth.start();
+    synth.stop(audioCtx.currentTime + 6);
+</script>
+
+</html>

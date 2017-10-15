@@ -13,3 +13,4 @@ Examples using the WebAudio api.
 - http://caniuse.com/#feat=audio-api
 - https://webaudio.github.io/web-audio-api/
 - https://tonejs.github.io
+- http://teropa.info/blog/2016/08/19/what-is-the-web-audio-api.html
