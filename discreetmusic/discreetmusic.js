@@ -130,7 +130,7 @@ function initEqualizerUI(container, equalizer) {
         label.textContent = frequency >= 1000 ? `${frequency / 1000}K` : frequency;
 
         noUiSlider.create(slider, {
-            start: -12,                     // The initial gain, 0dB
+            start: 0,                     // The initial gain, 0dB
             range: { min: -12, max: 12 }, // The allowed gain range, -12dB..12dB
             step: 0.1,                    // Adjust the gain in 0.1dB increments
             orientation: 'vertical',      // Render a vertical slider
