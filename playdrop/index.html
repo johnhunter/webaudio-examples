@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playdrop</title>
+    <link rel="stylesheet" href="playdrop.css">
+</head>
+<body>
+    <header>
+        <h1>Playdrop</h1>
+        <p>Drop an audio file and it will play.</p>
+    </header>
+
+    <section>
+        <div class="drop__zone"></div>
+    </section>
+
+</body>
+<script async type="module">
+    import {onFileDrop, fileToBuffer} from '../utils/filedrop.js';
+
+    const audioContext = new AudioContext();
+    const dropzone = document.querySelector('.drop__zone');
+
+    onFileDrop({
+        targets: [dropzone],
+        activeClass: 'drop__zone--active',
+        callback: handleDrop,
+    });
+
+    function handleDrop (files) {
+        let audioFiles = files.filter(f => (/^audio/).test(f.type));
+        if (!audioFiles.length) return;
+
+        let file = audioFiles.shift();
+        fileToBuffer(file)
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+                showFileDescription(file, buffer);
+
+                let source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+            });
+
+    }
+
+    function showFileDescription(file, buffer) {
+        dropzone.innerHTML = `
+            <b>${file.name}</b><br>
+            (${buffer.duration.toFixed(2)}s, ${(file.size/1000).toFixed(0)}kb)`;
+    }
+</script>
+</html>
