@@ -1,4 +1,4 @@
-import {playSample, reverbConvolver} from './samplerUtils.js';
+import {playSample, reverbConvolver} from '../utils/sampler.js';
 
 
 const audioContext = new AudioContext();
