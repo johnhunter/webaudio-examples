@@ -63,7 +63,7 @@ function showFileDescription(file, buffer) {
         (${buffer.duration.toFixed(2)}s, ${(file.size / 1000).toFixed(0)}kb)`;
 }
 
-function createPitchDetector(inputNode, callback = ()=>{}) {
+function createPitchDetector(inputNode, outputNode, callback = ()=>{}) {
     // https://github.com/markmarijnissen/PitchDetect/
     return new PitchDetector({
         context: audioContext,
