@@ -1,5 +1,5 @@
 import { onFileDrop, fileToBuffer } from '../utils/filedrop.js';
-import {} from '../lib/pitchdetector.js';
+import '../lib/pitchdetector.js';
 
 const audioContext = new AudioContext();
 
@@ -52,7 +52,7 @@ function handleDrop(files) {
 function onPitchDetect(stats, pitchDetector) {
     if (stats.detected) {
         dropzone.querySelector('.drop__note').innerHTML = pitchDetector.getNoteString();
-        pitchDetector.destroy();
+         pitchDetector.destroy();
     }
 }
 
@@ -69,6 +69,10 @@ function createPitchDetector(inputNode, outputNode, callback = ()=>{}) {
         context: audioContext,
         input: inputNode,
         output: outputNode,
+        onDetect: callback,
+        // onDebug: function (stats, pitchDetector) {
+        //     console.log('Debug: found %s, freq %s ', stats.detected, stats.frequency, stats);
+        // },
 
         // interpolate frequency (Optional)
         //
@@ -80,14 +84,8 @@ function createPitchDetector(inputNode, outputNode, callback = ()=>{}) {
         // highest neighbour.
         interpolateFrequency: true, // default: true
 
-        onDetect: callback,
-        onDebug: function (stats, pitchDetector) {
-            console.log('Debug: found %s, freq %s ', stats.detected, stats.frequency, stats);
-        },
-
         // Minimal signal strength (RMS, Optional)
         minRms: 0.01,
-
         // Detect pitch only with minimal correlation of: (Optional)
         minCorrelation: 0.9,
 
@@ -106,10 +104,10 @@ function createPitchDetector(inputNode, outputNode, callback = ()=>{}) {
         length: 1024, // default 1024
 
         // Limit range (Optional):
-        // minNote: 69, // by MIDI note number
-        // maxNote: 80,
+        minNote: 43, // G2  by MIDI note number
+        maxNote: 96, // C7
 
-        minFrequency: 80,
+        minFrequency: 90,
         maxFrequency: 20000,
 
         minPeriod: 2,  // by period (i.e. actual distance of calculation in audio buffer)
