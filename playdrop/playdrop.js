@@ -20,6 +20,8 @@ function handleDrop(files) {
     if (!audioFiles.length) return;
 
     let file = audioFiles.shift();
+
+    // analyse the file
     fileToBuffer(file)
         .then(data => audioContext.decodeAudioData(data))
         .then(buffer => {
@@ -28,16 +30,23 @@ function handleDrop(files) {
 
             let source = audioContext.createBufferSource();
             source.buffer = buffer;
-            source.loop = true;
+            source.loop = false;
             source.start(0);
 
-            detector = createPitchDetector(source, audioContext.destination, onPitchDetect);
+            detector = createPitchDetector(source, undefined, onPitchDetect);
             detector.start();
-
-            //source.connect(audioContext.destination);
-            //source.start(0);
         });
 
+    // play the file
+    fileToBuffer(file)
+        .then(data => audioContext.decodeAudioData(data))
+        .then(buffer => {
+            let source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.loop = false;
+            source.connect(audioContext.destination);
+            source.start(0);
+        });
 }
 
 function onPitchDetect(stats, pitchDetector) {
@@ -54,7 +63,7 @@ function showFileDescription(file, buffer) {
         (${buffer.duration.toFixed(2)}s, ${(file.size / 1000).toFixed(0)}kb)`;
 }
 
-function createPitchDetector(inputNode, outputNode, callback = ()=>{}) {
+function createPitchDetector(inputNode, callback = ()=>{}) {
     // https://github.com/markmarijnissen/PitchDetect/
     return new PitchDetector({
         context: audioContext,
@@ -72,9 +81,9 @@ function createPitchDetector(inputNode, outputNode, callback = ()=>{}) {
         interpolateFrequency: true, // default: true
 
         onDetect: callback,
-        // onDebug: function (stats, pitchDetector) {
-        //     console.log('Debug: found %s, freq %s ', stats.detected, stats.frequency, stats);
-        // },
+        onDebug: function (stats, pitchDetector) {
+            console.log('Debug: found %s, freq %s ', stats.detected, stats.frequency, stats);
+        },
 
         // Minimal signal strength (RMS, Optional)
         minRms: 0.01,
@@ -85,14 +94,13 @@ function createPitchDetector(inputNode, outputNode, callback = ()=>{}) {
         // Detect pitch only if correlation increases with at least: (Optional)
         //minCorreationIncrease: 0.5,
 
-        // Note: you cannot use minCorrelation and minCorreationIncrease
-        // at the same time!
+        // Note: you cannot use minCorrelation and minCorreationIncrease at the same time!
 
         // Signal Normalization (Optional)
         normalize: "rms", // or "peak". default: undefined
 
         // Only detect pitch once: (Optional)
-        stopAfterDetection: false,
+        stopAfterDetection: true,
 
         // Buffer length (Optional)
         length: 1024, // default 1024
@@ -101,7 +109,7 @@ function createPitchDetector(inputNode, outputNode, callback = ()=>{}) {
         // minNote: 69, // by MIDI note number
         // maxNote: 80,
 
-        minFrequency: 110,
+        minFrequency: 80,
         maxFrequency: 20000,
 
         minPeriod: 2,  // by period (i.e. actual distance of calculation in audio buffer)
