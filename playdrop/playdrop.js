@@ -19,12 +19,11 @@ function handleDrop(files) {
     let audioFiles = files.filter(f => (/^audio/).test(f.type));
     if (!audioFiles.length) return;
 
-    let file = audioFiles.shift();
+    const file = audioFiles.shift();
+    const audioBuffer = fileToBuffer(file).then(data => audioContext.decodeAudioData(data));
 
-    // analyse the file
-    fileToBuffer(file)
-        .then(data => audioContext.decodeAudioData(data))
-        .then(buffer => {
+    // analyse the buffer
+    audioBuffer.then(buffer => {
             showFileDescription(file, buffer);
             detector && detector.destroy();
 
@@ -37,10 +36,8 @@ function handleDrop(files) {
             detector.start();
         });
 
-    // play the file
-    fileToBuffer(file)
-        .then(data => audioContext.decodeAudioData(data))
-        .then(buffer => {
+    // play the buffer
+    audioBuffer.then(buffer => {
             let source = audioContext.createBufferSource();
             source.buffer = buffer;
             source.loop = false;
