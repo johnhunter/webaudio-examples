@@ -1,13 +1,17 @@
 import { onFileDrop, fileToBuffer } from '../utils/filedrop.js';
+import { frequencyChart } from '../utils/analyser.js';
 import '../lib/pitchdetector.js';
 
 const audioContext = new AudioContext();
 
-let dropzone;
-let detector;
+var dropzone;
+var detector;
+var chartContainer;
 
 export function initDropzone(selector, activeClass) {
     dropzone = document.querySelector(selector);
+    chartContainer = document.createElement('div');
+    dropzone.insertAdjacentElement('afterend', chartContainer);
     onFileDrop({
         targets: [dropzone],
         activeClass: activeClass,
@@ -41,7 +45,9 @@ function handleDrop(files) {
             let source = audioContext.createBufferSource();
             source.buffer = buffer;
             source.loop = false;
-            source.connect(audioContext.destination);
+
+            frequencyChart({ audioContext, source, container: chartContainer });
+            //source.connect(audioContext.destination);
             source.start(0);
         });
 }
